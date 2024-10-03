@@ -13,8 +13,9 @@ from utility import GUI, File, Settings
 import tkinter as tk
 from typing import Union
 
-# SETTINGS
-logger = Settings.setup_logging("debugging")
+# Settings
+from pytools import logger
+from pytools import SETTINGS_PATH
 
 
 class Timer:

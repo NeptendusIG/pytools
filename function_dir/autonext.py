@@ -25,8 +25,9 @@ from utility import File, Settings, GUI
 from pytools.class_dir.Apps import Timer
 
 
-# Paramètres
-logger = Settings.setup_logging("debugging")
+# Settings
+from pytools import logger
+from pytools import SETTINGS_PATH
 
 # -- FONCTIONS DÉFINIES --
 def main_tool():
@@ -36,20 +37,48 @@ def main_tool():
     3 - Lancer l'outil
     """
     logger.info("Tool: INITIALISE main tool")
-    filepath, seconds, count = full_minimal_setup()
+    parameters = setup()
+    if not parameters:
+        logger.error("Tool: CANCELD (No parameters)")
+        return
+    filepath, seconds, count = parameters
     logger.debug(f"Tool: given SETTINGS - seconds: {seconds}, count: {count}")
     logger.info(f"Tool: START autoslide with {seconds} seconds and {count} slides")
     File.open_file(filepath)
-    start_autoslide(filepath=filepath, seconds=seconds, count=count)
+    start_autoslide(filepath, seconds, count)
 
 
 # 1 - Set up
 def full_minimal_setup():
-    """Mise en place complète
+    """Mise en place complète, minimaliste (pas de gestion des erreurs)
     """
     logger.debug("Tool: Autonext: Setup: START")
     return GUI.ask_file(), int(input("Entrez le temps par élément (s): ")), int(input("Entrez le nombre de slides: "))
 
+
+def setup():
+    """Gestion de l'historique des modifications
+    """
+    logger.debug("Tool: Autonext: Setup: START")
+
+    return ask_parameters()
+
+def ask_parameters():
+    """Demande des paramètres"""
+    logger.debug("Tool: Autonext: Setup-ask: START")
+    filepath = GUI.ask_file()
+    if not filepath:
+        logger.error("Tool: Autonext: Setup-ask: CANCELD (No file selected)")
+        return 
+    interval = int(input("Entrez le temps par élément (s): "))
+    if not interval:
+        logger.error("Tool: Autonext: Setup-ask: CANCELD (No interval selected)")
+        return
+    count = int(input("Entrez le nombre de slides: "))
+    if not count:
+        logger.error("Tool: Autonext: Setup-ask: CANCELD (No count selected)")
+        return
+    return filepath, interval, count
 
 def choose_file():
     """Choisir le fichier à lire

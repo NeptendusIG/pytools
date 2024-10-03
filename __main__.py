@@ -11,8 +11,8 @@ from utility import GUI, Settings # type: ignore
 from pytools.function_dir.autonext import main_tool
 
 # Settings
-logger = Settings.setup_logging("debugging")
-
+from pytools import logger
+from pytools import SETTINGS_PATH
 
 # -- OPÉRATIONS DÉFINIES --
 
