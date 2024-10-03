@@ -1,10 +1,15 @@
-# nom - titre
+# pytools - Python Micro Tools
 
 Auteur(s) : Gaétan Lepage
-Création : 30/01/2024
-Description :
+Création : 01/10/2024
+Description : 
 
-> (courte)
+> Suite d'outils pratiques et facilements utilisables.
+
+## Précisions - Outils disponibles 
+- autonext : Passer page d'un document automatiquement
+- obsidiansort : Analyser/Trier les fichiers de mon Vault Obsidian
+
 
 ## Prérequis
 
@@ -22,35 +27,21 @@ python ... [arguments]
 
 ## Versions
 
-1.0.0 - 30/08/24 - Mise en fonctionnement
+1.0.0 - 30/08/24 - Mise en fonctionnement (version fonctionnelle du premier outil)
 
 ## Améliorations futurs
 
 **Road map :**
 
-1.1.0 // -
+1.1.0 // - Option de sauvegarde des config
 
 **Suggestions :**
 
-- ...
+- capturetxt : Outils de capture d'écran qui récupert automatiquement le texte compris dans l'image de la capture
+- Accès facile aux outils par commandes du terminales 
 
 ## Plus d'informations
 
 ### Structure du projet
 
 ### Points techniques interressants
-
-# _INITIAL GIT COMMIT_
-
-git commit -m "Initial commit: Mise en route du projet
-Python Quick Tools - pytools
-
-- Ajout des fichiers principaux :
-  - **main**.py
-  - log_config.py (à ajouter)
-  - requirements.txt (à ajouter)
-  - README.md (à compléter)
-- Mise en place de la structure de dossiers :
-  - /class_dir
-  - /function_dir
-  - /tests (à ajouter)"
