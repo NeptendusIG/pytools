@@ -24,10 +24,10 @@ from typing import Any, Optional
 from utility import File, Settings, GUI
 from pytools.class_dir.Apps import Timer
 
-
 # Settings
 from pytools import logger
 from pytools import SETTINGS_PATH
+
 
 # -- FONCTIONS DÉFINIES --
 def main_tool():
@@ -37,65 +37,102 @@ def main_tool():
     3 - Lancer l'outil
     """
     logger.info("Tool: INITIALISE main tool")
-    parameters = setup()
-    if not parameters:
+    # 1 - Configuration / Paramètres (/annuler)
+    session = setup_menu()
+    if session is None:
         logger.error("Tool: CANCELD (No parameters)")
         return
-    filepath, seconds, count = parameters
     logger.debug(f"Tool: given SETTINGS - seconds: {seconds}, count: {count}")
+    # 2 - Lancer l'outil
     logger.info(f"Tool: START autoslide with {seconds} seconds and {count} slides")
-    File.open_file(filepath)
+    filepath, seconds, count = session["parameters"]
     start_autoslide(filepath, seconds, count)
+    logger.info("Tool: END")
+    # 3 - Sauvegarder / Supprimer les paramètres
+    quit(session)
 
 
-# 1 - Set up
-def full_minimal_setup():
-    """Mise en place complète, minimaliste (pas de gestion des erreurs)
-    """
-    logger.debug("Tool: Autonext: Setup: START")
-    return GUI.ask_file(), int(input("Entrez le temps par élément (s): ")), int(input("Entrez le nombre de slides: "))
-
-
-def setup():
+# - 1 - Set up
+def setup_menu() -> [Optional[tuple[str, int, int]], int]:
     """Gestion de l'historique des modifications
     """
     logger.debug("Tool: Autonext: Setup: START")
+    """Proposer les config sauvegardées (/nouaaux paramètres)
+    """
+    # 1 - Charger les paramètres sauvegardés
+    saved_session: dict[str, (str, tuple)] = File.JsonFile.get_value(SETTINGS_PATH, "saved_sessions")
+    logger.debug(f"Tool: Autonext: Config_menu: saved_sessions = {saved_session}")
+    # 2 - Proposer les config
+    print("0: Nouvelle configuration")
+    for i, session in enumerate(1, saved_session):
+        name = session["name"]
+        path, seconds, count = session["parameters"]
+        if not os.path.exists(path):
+            logger.debug(f"Tool: Autonext: Config_menu: Stored File not found: {path}")
+            continue
+        print(f"{i+1}: {name} ({seconds}s, {count} steps)")
+    # 3 - Traiter le choix
+    choice = int(input("Choisissez une configuration: "))
+    if choice == 0:
+        selected_session = create_new_session()
+    else:
+        selected_session = saved_session[choice-1]
+    return selected_session
+    
 
-    return ask_parameters()
-
-def ask_parameters():
-    """Demande des paramètres"""
-    logger.debug("Tool: Autonext: Setup-ask: START")
+def create_new_session() -> Optional[dict]:
+    """Créer une nouvelle session, ou annuler.
+    """
+    logger.debug("Tool: Autonext: Setup-new: START (parameters + name)")
     filepath = GUI.ask_file()
     if not filepath:
-        logger.error("Tool: Autonext: Setup-ask: CANCELD (No file selected)")
-        return 
+        logger.error("Tool: Autonext: Setup-new: CANCELD (No file selected)")
+        return
     interval = int(input("Entrez le temps par élément (s): "))
     if not interval:
-        logger.error("Tool: Autonext: Setup-ask: CANCELD (No interval selected)")
+        logger.error("Tool: Autonext: Setup-new: CANCELD (No interval selected)")
         return
     count = int(input("Entrez le nombre de slides: "))
     if not count:
-        logger.error("Tool: Autonext: Setup-ask: CANCELD (No count selected)")
+        logger.error("Tool: Autonext: Setup-new: CANCELD (No count selected)")
         return
-    return filepath, interval, count
-
-def choose_file():
-    """Choisir le fichier à lire
-    """
-    path = GUI.ask_file()
-    select_settings(path)
-    File.open_file(path)
+    name = input("Entrez un nom pour cette configuration: ")
+    if not name:
+        logger.error("Tool: Autonext: Setup-new: CANCELD (No name selected)")
+        return
+    return {"name": name, "parameters": (filepath, interval, count)}
 
 
-def select_settings(path: str):
-    """Sélectionner les paramètres
-    """
-    window = GUI.set_basic_window("Paramètres")
-    seconds = int(GUI.ask_entry("Entrez temps par élément", "250x100"))
+def quit(choice):
+    print("Voulez-vous sauvegarder cette configuration ?")
+    save = input("(S-save / D-delete): ").lower()
+    if save == "s":
+        save_session(choice)
+    elif save == "d":
+        delete_session(choice)
+    else:
+        print("Configuration non sauvegardée")
+
+def save_session(used_session: dict):
+    """Sauvegarder la session si elle est nouvelle (sinon rien faire)"""
+    if used_session!= 0:
+        return
+    new_backup = File.JsonFile.get_value(SETTINGS_PATH, "saved_sessions").append(used_session)
+    File.JsonFile.set_value(SETTINGS_PATH, "saved_sessions", new_backup)
+    logger.info("Tool: Autonext: Session saved")
 
 
-# 2 - Actions
+def delete_session(used_session: dict):
+    if used_session == 0:
+        return
+    new_backup = File.JsonFile.get_value(SETTINGS_PATH, "saved_sessions").remove(used_session)
+    File.JsonFile.set_value(SETTINGS_PATH, "saved_sessions", new_backup)
+    logger.info("Tool: Autonext: Session deleted")
+
+
+
+
+# - 2 - Actions
 def next_slide():
     """Slide suivant
     """
@@ -106,11 +143,12 @@ def next_slide():
     pyautogui.keyUp('option')
 
 
-# 3 - Contrôle de l'outil 
+# - 3 - Contrôle de l'outil 
 def start_autoslide(filepath: str, seconds: int, count: int=10):
     """Démarre le diaporama automatique
     paramètres
     """
+    File.open_file(filepath)
     logger.info("Tool: Autonext: Initialisation")
     i = 0
     time.sleep(5)
@@ -128,7 +166,7 @@ def start_autoslide(filepath: str, seconds: int, count: int=10):
         logger.debug(f"Tool: Autonext: Loop: ACTIVE (i, count) = ({i}, {count})")
         i+=1
 
-# 4 - Affichage
+# - 4 - Affichage
 
 def timer(seconds: int):
     """Fenêtre affichant les secondes restantes"""

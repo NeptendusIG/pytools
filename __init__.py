@@ -17,7 +17,7 @@ import log_config
 
 # - SETTINGS -
 logger = Settings.setup_logging("debugging")
-
+logger.info("PYTOOLS: INIT: Logger initialized")
 
 # - VARIABLES DE L'APPLICATION -
     # Chemin par défaut vers le fichier de configuration
