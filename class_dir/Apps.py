@@ -15,7 +15,7 @@ from typing import Union
 
 # Settings
 from pytools import logger
-from pytools import SETTINGS_PATH
+from pytools import AUTONEXT_SETTINGS_PATH
 
 
 class Timer:

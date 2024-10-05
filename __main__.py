@@ -12,7 +12,7 @@ from pytools.function_dir.autonext import main_tool
 
 # Settings
 from pytools import logger
-from pytools import SETTINGS_PATH
+from pytools import AUTONEXT_SETTINGS_PATH
 
 # -- OPÉRATIONS DÉFINIES --
 

@@ -26,7 +26,7 @@ from pytools.class_dir.Apps import Timer
 
 # Settings
 from pytools import logger
-from pytools import SETTINGS_PATH
+from pytools import AUTONEXT_SETTINGS_PATH
 
 
 # -- FONCTIONS DÉFINIES --
@@ -42,29 +42,31 @@ def main_tool():
     if session is None:
         logger.error("Tool: CANCELD (No parameters)")
         return
-    logger.debug(f"Tool: given SETTINGS - seconds: {seconds}, count: {count}")
+    logger.debug(f"Tool: given SETTINGS - session set ({session})")
     # 2 - Lancer l'outil
-    logger.info(f"Tool: START autoslide with {seconds} seconds and {count} slides")
     filepath, seconds, count = session["parameters"]
+    logger.info(f"Tool: START autoslide with {seconds} seconds and {count} slides")
     start_autoslide(filepath, seconds, count)
-    logger.info("Tool: END")
+    logger.info("")
     # 3 - Sauvegarder / Supprimer les paramètres
-    quit(session)
+    quit_session(session)
+    logger.info("Tool: END")
+
 
 
 # - 1 - Set up
-def setup_menu() -> [Optional[tuple[str, int, int]], int]:
+def setup_menu() -> Optional[dict]:
     """Gestion de l'historique des modifications
     """
     logger.debug("Tool: Autonext: Setup: START")
     """Proposer les config sauvegardées (/nouaaux paramètres)
     """
     # 1 - Charger les paramètres sauvegardés
-    saved_session: dict[str, (str, tuple)] = File.JsonFile.get_value(SETTINGS_PATH, "saved_sessions")
+    saved_session: dict[str, (str, tuple)] = File.JsonFile.get_value(AUTONEXT_SETTINGS_PATH, "saved_sessions")
     logger.debug(f"Tool: Autonext: Config_menu: saved_sessions = {saved_session}")
     # 2 - Proposer les config
     print("0: Nouvelle configuration")
-    for i, session in enumerate(1, saved_session):
+    for i, session in enumerate(saved_session, 1):
         name = session["name"]
         path, seconds, count = session["parameters"]
         if not os.path.exists(path):
@@ -103,30 +105,34 @@ def create_new_session() -> Optional[dict]:
     return {"name": name, "parameters": (filepath, interval, count)}
 
 
-def quit(choice):
+def quit_session(used_session):
     print("Voulez-vous sauvegarder cette configuration ?")
-    save = input("(S-save / D-delete): ").lower()
-    if save == "s":
-        save_session(choice)
-    elif save == "d":
-        delete_session(choice)
+    save = input("(S-save / D-delete): ")
+    logger.debug(f"Quit session: get response")
+    if "s" in save.lower():
+        save_session(used_session)
+    elif "d" in save.lower():
+        delete_session(used_session)
     else:
         print("Configuration non sauvegardée")
+    print("managed")
 
 def save_session(used_session: dict):
     """Sauvegarder la session si elle est nouvelle (sinon rien faire)"""
-    if used_session!= 0:
+    backup = File.JsonFile.get_value(AUTONEXT_SETTINGS_PATH, "saved_sessions")
+    if used_session in backup:
         return
-    new_backup = File.JsonFile.get_value(SETTINGS_PATH, "saved_sessions").append(used_session)
-    File.JsonFile.set_value(SETTINGS_PATH, "saved_sessions", new_backup)
+    backup.append(used_session)
+    File.JsonFile.set_value(AUTONEXT_SETTINGS_PATH, "saved_sessions", backup)
     logger.info("Tool: Autonext: Session saved")
 
 
 def delete_session(used_session: dict):
-    if used_session == 0:
+    backup = File.JsonFile.get_value(AUTONEXT_SETTINGS_PATH, "saved_sessions")
+    if used_session not in backup:
         return
-    new_backup = File.JsonFile.get_value(SETTINGS_PATH, "saved_sessions").remove(used_session)
-    File.JsonFile.set_value(SETTINGS_PATH, "saved_sessions", new_backup)
+    backup.remove(used_session)
+    File.JsonFile.set_value(AUTONEXT_SETTINGS_PATH, "saved_sessions", backup)
     logger.info("Tool: Autonext: Session deleted")
 
 
