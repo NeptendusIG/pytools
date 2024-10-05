@@ -72,7 +72,7 @@ def setup_menu() -> Optional[dict]:
         if not os.path.exists(path):
             logger.debug(f"Tool: Autonext: Config_menu: Stored File not found: {path}")
             continue
-        print(f"{i+1}: {name} ({seconds}s, {count} steps)")
+        print(f"{i}: {name} ({seconds}s, {count} steps)")
     # 3 - Traiter le choix
     choice = int(input("Choisissez une configuration: "))
     if choice == 0:
@@ -165,7 +165,10 @@ def start_autoslide(filepath: str, seconds: int, count: int=10):
             logger.info("Tool: Autonext: END")
             break
         # attendre
-        timer(seconds)
+        is_forced_stop = timer(seconds)
+        if is_forced_stop:
+            logger.info("Tool: Autonext: forced STOP")
+            break
         # slide suivant
         File.open_file(filepath)
         next_slide()
@@ -179,7 +182,7 @@ def timer(seconds: int):
     wind = GUI.set_basic_window("Timer")
     app = Timer(wind, seconds)
     wind.mainloop()
-
+    return app.get_result()
 
 
 

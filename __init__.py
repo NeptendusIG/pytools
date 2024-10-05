@@ -12,10 +12,10 @@ from utility import Settings
 
 
 # - SET ENVIRONMENT -
-default_settings = {
-    ""
-}
-Settings.ConfigPath.force_existence("autonext", {"saved_sessions": []}, file_name="autonext_config.json")  # Crée le fichier de configuration s'il n'existe pas
+default_autonext_config = {"saved_sessions": []}
+rootpath: Path = Settings.ConfigPath.set_directories("pytools", "autonext")
+Settings.ConfigPath.set_jsonfile(rootpath, "config.json", default_autonext_config, exist_ok=True)  
+AUTONEXT_SETTINGS_PATH = Settings.ConfigPath.get_path("pytools", "autonext", "config.json")  
 
 
 # - IMPORTS EXTERNES -
@@ -25,8 +25,3 @@ from utility import GUI, File
 # - SETTINGS -
 logger = Settings.setup_logging("debugging")
 logger.info("PYTOOLS: INIT: Logger initialized")
-    # SETTINGS_PATH = os.getenv("PYTOOLS_SETTINGS_PATH", DEFAULT_SETTINGS_PATH)
-AUTONEXT_SETTINGS_PATH = Settings.ConfigPath.set_path("pytools", file_name="autonext_config.json")
-
-
-

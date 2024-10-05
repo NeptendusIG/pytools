@@ -27,6 +27,7 @@ class Timer:
     def __init__(self, master: tk.Tk, seconds: int):
         self.master = master
         self.seconds_left = seconds
+        self.is_closed = False
 
 
         self.seconds_var = tk.StringVar()
@@ -34,6 +35,8 @@ class Timer:
 
         self.label = tk.Label(master, textvariable=self.seconds_var, font=('Helvetica', 48))
         self.label.pack() 
+        self.master.protocol("WM_DELETE_WINDOW", self.stop_tool)
+
 
         self.master.after(1000, self.update_timer)
 
@@ -46,21 +49,19 @@ class Timer:
             # Replanifie l'appel de cette méthode dans 1 seconde (1000 ms)
             self.master.after(1000, self.update_timer)
         else:
-            self.stop()
+            self.close()
 
-    def stop(self):
+    def close(self):
         self.master.quit()
         self.master.withdraw()
 
+    def stop_tool(self):
+        self.is_closed = True
+        self.close()
 
-    class SubClass:
+    def get_result(self):
+        return self.is_closed
 
-        def __init__(self, *att):
-            logger.info('Initialized')
-            pass
-
-        def __str__(self):
-            return ""
 
 
 if __name__ == '__main__':
