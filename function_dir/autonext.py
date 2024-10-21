@@ -1,14 +1,8 @@
-#   Module local de fonctions
 # ----------------------------
 #     Python Personal Tools
 # DATE: 27/9/2024
-# VERSION: 1.0
 # ----------------------------
 """  -- Structures des fonctions disponibles --
-Classement 1
- - function_name(arg1)
-- f2(arg1)
-Classement 2
 """
 
 
@@ -159,7 +153,6 @@ def start_autoslide(filepath: str, seconds: int, count: int=10):
     i = 0
     time.sleep(5)
     logger.info("Tool: Autonext: START")
-    temps = tk.StringVar()
     while i<50 and i<count:
         if i>=count:
             logger.info("Tool: Autonext: END")
@@ -190,11 +183,4 @@ def stop_slides():
     global is_running
     is_running = False
 
-# -- TESTS ET EXEMPLES --
-if __name__ == '__main__':
-    # Variables
-    variable = None
-    objet = None
-    # Programme test
-    time.sleep(3)
-    next_slide()
+
