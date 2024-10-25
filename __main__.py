@@ -10,7 +10,8 @@ from typing import Callable
 from utility import GUI, Settings # type: ignore
 
 # - TOOLS IMPORTS -     
-from pytools.function_dir import autonext, capturetxt, youtubedownload
+from pytools import __title__, __options__, __call__
+from pytools.function_dir import autonext, capturetxt, youtubedownload, obsidiansort
     # Main Functions
 autonext_mt: Callable = autonext.main_tool
 capturetxt_mt: Callable = capturetxt.main_tool 
@@ -45,6 +46,13 @@ tools = {
     "ytdownload": ytdown_mt,
 }
 
+modules = {
+    "autonext": autonext,
+    "obsidiansort": obsidiansort,
+    "capturetxt": capturetxt,
+    "ytdownload": youtubedownload,
+}
+
 associate_longargs = {
     "--autonext": "autonext",
     "--obsort": "obsidiansort", 
@@ -72,18 +80,30 @@ indicate_args = { # Indicate the arguments to be used for each tool
     "ytdownload": "-o--open, -a-audio (only), --res=<resolution_def=720>p",
 }
 
-def make_help(tools, associate_longargs, associate_shortargs, indicate_args):
-    reversed_longargs = {value: key for key, value in associate_longargs.items()}
-    reversed_shortargs = {value: key for key, value in associate_shortargs.items()}
-    help_summary = "------------------------\n--- PYTOOLS commands ---\n------------------------\n\n"
-    for tool in tools.keys():
-        help_summary += f"{tool} :"
-        help_summary += f"\t{reversed_shortargs[tool]}, {reversed_longargs[tool]}"
-        help_summary += f"\t{indicate_args[tool]}\n"
-    return help_summary
+def make_h(help_texte, main_agrs, sub_args):
+    for mod, help in main_agrs.items():
+        help_texte += help 
+        help_texte += sub_args[mod]
+        help_texte += "\n\n"
+    return help_texte
+
+def make_help(modules):
+    # Titre
+    help_texte = f"\n{'='*50}\n{__title__.upper():^50}\n{'='*50}\n\n"
+    help_texte += __call__ + "\n\n"
+    # Récupérer les arguments et sous-arguments
+    help_dict = {module: f"{args:<30}" + module for module, (args, help) in __options__.items()}
+    sub_helps = {mod: "" for mod in modules.keys()}
+    for name, mod in modules.items():
+        if mod is not None:
+            sub_helps[name] = "".join([f"\n\t{args:<30}{description}" for args, description in mod.__options__.values()])
+    # Créer le texte d'aide
+    return make_h(help_texte, help_dict, sub_helps)
+
+
         
-help_summary = make_help(tools, associate_longargs, associate_shortargs, indicate_args)
-print(help_summary)
+help_summary = make_help(modules=modules)
+# print(help_summary)
 
 # -- FONCTIONS MAÎTRES --
 def manage_by_args():
@@ -93,7 +113,7 @@ def manage_by_args():
     logger.info(f'CMD Window : CALL program "{sys.argv[1]}"')
     first_arg = sys.argv[1]
     if first_arg == "help" or first_arg == "--help" or first_arg == "-h":
-        print("---- PYTOOLS commands ----", tools.keys(), associate_midargs, associate_shortargs, sep="\n\n")
+        print(make_help(modules))
     elif first_arg.startswith("--"):
         # Si le premier argument est une option -> Lancer le package correspondant
         logger.info(f'CMD Window : Terminal mode "{first_arg}"')

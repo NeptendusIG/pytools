@@ -11,13 +11,16 @@ from utility import Settings
 
 # Paramètres
 logger = Settings.setup_logging("debugging")
-
+__options__ = {
+    "striping text" : ("-c, --clean", "Nettoie le teste (sauts de ligne, et tabulations)")
+ } # Arguments accessibles sur cette application
 
 # -- FONCTIONS DÉFINIES --
 def select_screenshot():
     system = platform.system().lower()
     data_dir_path = os.path.join(os.getcwd(), "data")
-    os.mkdir(current_path, exist_ok=True)
+    if not os.path.exists(data_dir_path):
+        os.mkdir(data_dir_path)
     current_path = os.path.join(data_dir_path, "image.png")
     try:
         # Save to current directory

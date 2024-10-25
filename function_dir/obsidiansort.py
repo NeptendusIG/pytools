@@ -25,6 +25,9 @@ from utility import File, Settings, GUI
 
 # Paramètres
 logger = Settings.setup_logging("debugging")
+__options__ = {
+    "administrator": ("-s, --sudo", "Exécute le script en privilèges administrateur")
+}
 
 OBSIDIAN_PATH = "/Users/gaetan/Library/Mobile Documents/iCloud~md~obsidian/Documents/VaultCODE"
 

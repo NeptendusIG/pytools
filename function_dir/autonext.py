@@ -21,7 +21,7 @@ from pytools.class_dir.Apps import Timer
 # Settings
 from pytools import logger
 from pytools import AUTONEXT_SETTINGS_PATH
-
+__options__ = {}  # Arguments accessibles sur cette application (aucuns)
 
 # -- FONCTIONS DÉFINIES --
 def main_tool():
