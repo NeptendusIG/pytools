@@ -20,12 +20,19 @@ __options__ = {
     "capturetxt": ("-c, --capttxt", "Capture le texte de l'écran"),
     "ytdownload": ("-y, --ytdownl", "Téléchargement de vidéo YouTube"),
     "obsidiansort": ("-o, --obsort", "Trie et gère les notes Obsidian"),
+    "autobackup": ("-b, --autback", "Système de sauvegarde de fichiers"),
 }
 # - SET ENVIRONMENT -
+    # autonext
 default_autonext_config = {"saved_sessions": []}
 rootpath: Path = Settings.ConfigPath.set_directories("pytools", "autonext")
 Settings.ConfigPath.set_jsonfile(rootpath, "config.json", default_autonext_config, exist_ok=True)  
 AUTONEXT_SETTINGS_PATH = Settings.ConfigPath.get_path("pytools", "autonext", "config.json")  
+    # autobackup
+default_autobackup_config = {"backups_config": {}}
+rootpath: Path = Settings.ConfigPath.set_directories("pytools", "autobackup")
+Settings.ConfigPath.set_jsonfile(rootpath, "config.json", default_autobackup_config, exist_ok=True)
+AUTOBACKUP_SETTINGS_PATH = Settings.ConfigPath.get_path("pytools", "autobackup", "config.json")
 
 
 # - IMPORTS EXTERNES -

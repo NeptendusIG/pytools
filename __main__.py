@@ -10,11 +10,12 @@ from typing import Callable
 from utility import GUI, Settings # type: ignore
 
 # - TOOLS IMPORTS -     
-from pytools.function_dir import autonext, capturetxt, youtubedownload, obsidiansort
+from pytools.function_dir import autonext, capturetxt, youtubedownload, obsidiansort, autobackup
     # Main Functions
 autonext_mt: Callable = autonext.main_tool
 capturetxt_mt: Callable = capturetxt.main_tool 
 ytdown_mt: Callable = youtubedownload.main_tool
+autback_mt: Callable = autobackup.main_tool
 
 # - SETTINGS IMPORTS -
 from pytools import logger
@@ -27,6 +28,7 @@ modules = {
     "obsidiansort": obsidiansort,
     "capturetxt": capturetxt,
     "ytdownload": youtubedownload,
+    "autobackup": autobackup,
 }
 __options__ = {
     "autonext": ("-a, --autonext", "Outil de lecture automatique de slides"),
@@ -47,22 +49,25 @@ tools = {
     "obsidiansort": None, 
     "capturetxt": capturetxt_mt,
     "ytdownload": ytdown_mt,
+    "autobackup": autback_mt,
 }
 
 
 
-associate_longargs = {
+associate_longargs = {  # Values in {tools} and {modules}
     "--autonext": "autonext",
     "--obsort": "obsidiansort", 
     "--capttxt": "capturetxt",
     "--ytdownl": "ytdownload",
+    "--autback": "autobackup",
 }
 
-associate_shortargs = {
+associate_shortargs = {  # Values in {tools} and {modules}
     "-a": "autonext",
     "-o": "obsidiansort",
     "-c": "capturetxt",
     "-y": "ytdownload",
+    "-b": "autobackup",
 }
 
 
