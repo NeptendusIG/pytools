@@ -14,7 +14,13 @@ from utility import Settings
 __version__ = "0.1.0"
 __author__ = "Gaétan Lepage"
     # - available commands -
-
+__title__ = "Python Tools"
+__options__ = {
+    "autonext": ("-a, --autonext", "Outil de lecture automatique de slides"),
+    "capturetxt": ("-c, --capttxt", "Capture le texte de l'écran"),
+    "ytdownload": ("-y, --ytdownl", "Téléchargement de vidéo YouTube"),
+    "obsidiansort": ("-o, --obsort", "Trie et gère les notes Obsidian"),
+}
 # - SET ENVIRONMENT -
 default_autonext_config = {"saved_sessions": []}
 rootpath: Path = Settings.ConfigPath.set_directories("pytools", "autonext")

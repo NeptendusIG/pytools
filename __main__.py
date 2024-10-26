@@ -34,9 +34,8 @@ __options__ = {
     "ytdownload": ("-y, --ytdownl", "Téléchargement de vidéo YouTube"),
     "obsidiansort": ("-o, --obsort", "Trie et gère les notes Obsidian"),
 }
-
-__help__ = Settings.PackageMetadata.make_help(__title__, __options__, modules)
-print(__help__)
+import pytools
+__help__ = Settings.PackageMetadata.make_help(pytools, modules)
 
 
 # -- OPÉRATIONS DÉFINIES --
