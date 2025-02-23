@@ -83,6 +83,12 @@ def manage_by_args():
         apply_tool_longarg(first_arg, *sys.argv[2:]) 
     elif first_arg.startswith("-"):
         logger.info(f'CMD Window : Terminal mode "{first_arg}"')
+        # Pouvoir donner plusieurs arguments en même temps ex: -clq -> -c -l -q
+        if len(first_arg) > 2:
+            copy_first_arg = first_arg  # temporaire et Debugging
+            first_arg = first_arg[0:2]
+            sys.argv.insert(2, f"-{copy_first_arg[2:]}")
+            logger.debug(f"CMD Window : Short argument split: ({copy_first_arg}) -> ({first_arg} et {sys.argv[2:]}")
         apply_tool_shortarg(first_arg, *sys.argv[2:])
 
 

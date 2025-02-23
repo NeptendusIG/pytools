@@ -1,6 +1,6 @@
-# ----------------------------
-#      Capture Text Tool 
-# ----------------------------
+# --------------------------------------------------
+#      Capture Text Tool  (and Capture Latex Tool)
+# --------------------------------------------------
 # Retrive text from a screenshot to clipborad
 
 
@@ -8,11 +8,13 @@
 import platform, subprocess, os
 import pytesseract, pyperclip, PIL.Image as Image
 from utility import Settings
+from pix2tex.cli import LatexOCR # For LaTeX extraction
 
 # Paramètres
 logger = Settings.setup_logging("debugging")
 __options__ = {
-    "striping text" : ("-c, --clean", "Nettoie le teste (sauts de ligne, et tabulations)")
+    "striping text" : ("-c, --clean", "Nettoie le teste (sauts de ligne, et tabulations)"),
+    "latex mode" : ("-l, --latex", "Extraction d'équation vers syntaxe LaTeX"),
  } # Arguments accessibles sur cette application
 
 # -- FONCTIONS DÉFINIES --
@@ -42,6 +44,16 @@ def get_text_from_image(image_path):
         return text.strip()
     except Exception as e:
         return f"Une erreur s'est produite : {str(e)}"
+
+
+def get_latex_from_image(image_path):
+    try:
+        image = Image.open(image_path)
+        # Utilisation de l'outil de reconnaissance de LaTeX
+        model = LatexOCR()
+        return model(image)
+    except Exception as e:
+        return f"Une erreur s'est produite : {str(e)}"
         
 
 def traitement_texte(text, *args):
@@ -59,9 +71,14 @@ def main_tool(*args):
     # - 1 - Prendre une capture d'écran
     path = select_screenshot()
     logger.info(f"Screenshot taken: {path}")
-    # - 2 - Extraire le texte
-    text = get_text_from_image(path)
-    logger.info(f"Text extracted: {text}")
+    # - 2 - Extraire le texte/LaTeX
+    if "--latex" in args or "-l" in args:
+        logger.info("LaTeX equation parsing: Start")
+        text = get_latex_from_image(path)
+        logger.info("LaTeX equation : End")
+    else:
+        text = get_text_from_image(path)
+        logger.info(f"Text extracted: {text}")
     # - 3 - Traiter le texte si argument(s)
     if args:
         text = traitement_texte(text, *args)
@@ -69,6 +86,7 @@ def main_tool(*args):
     pyperclip.copy(text)
     logger.info("Text copied to clipboard")
     logger.info("END")
+
 
 
 
